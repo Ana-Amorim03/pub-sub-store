@@ -24,7 +24,24 @@ async function printReport() {
 }
 
 async function consume() {
-    //TODO: Constuir a comunicação com a fila 
+    const reportQueue = 'report'
+    try {
+        const rabbitMQInstance = await RabbitMQService.getInstance()
+        
+        await rabbitMQInstance.consume(reportQueue, async (msg) => {
+            const orderData = JSON.parse(msg.content)
+            if (orderData.products) {
+                await updateReport(orderData.products)
+                console.log('\n====== Current Sales Report ======')
+                await printReport()
+                console.log('================================\n')
+            }
+        })
+
+        console.log('Report service is running...')
+    } catch (error) {
+        console.error('Error:', error)
+    }
 } 
 
 consume()

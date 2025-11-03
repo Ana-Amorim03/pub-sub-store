@@ -15,3 +15,10 @@ FROM base AS shipping-service
 ADD  services/shipping/ .
 RUN npm install --only=production 
 CMD [ "node", "app.js" ]
+
+FROM base AS report-service
+WORKDIR /var/www/
+COPY services/report/package*.json ./
+RUN npm install --only=production 
+COPY services/report/ .
+CMD [ "node", "app.js" ]
